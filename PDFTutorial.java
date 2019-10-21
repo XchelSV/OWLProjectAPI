@@ -21,9 +21,13 @@ import org.semanticweb.owlapi.model.OWLAxiom;
 import org.semanticweb.owlapi.model.OWLClass;
 import org.semanticweb.owlapi.model.OWLClassAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDataFactory;
+import org.semanticweb.owlapi.model.OWLDataProperty;
+import org.semanticweb.owlapi.model.OWLDataPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLDeclarationAxiom;
+import org.semanticweb.owlapi.model.OWLLiteral;
 import org.semanticweb.owlapi.model.OWLNamedIndividual;
 import org.semanticweb.owlapi.model.OWLObjectProperty;
+import org.semanticweb.owlapi.model.OWLObjectPropertyAssertionAxiom;
 import org.semanticweb.owlapi.model.OWLOntology;
 import org.semanticweb.owlapi.model.OWLOntologyCreationException;
 import org.semanticweb.owlapi.model.OWLOntologyFormat;
@@ -48,7 +52,7 @@ public class PDFTutorial {
   @Produces(MediaType.APPLICATION_JSON)
   public Response sayHello(@PathParam("name") String name) throws Exception {
 	  
-	  File f = new File("/Users/xchelsvz/"+name+".owl");
+	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+name+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
 	  
@@ -69,7 +73,7 @@ public class PDFTutorial {
 	  manager.saveOntology(localPizza, IRI.create(f.toURI()));
 	  
 	  
-    return Response.ok("Hello World desde el API REST",MediaType.APPLICATION_JSON).build();
+    return Response.ok().build();
 
   }
   
@@ -77,37 +81,37 @@ public class PDFTutorial {
   @Path("/onthology/create/class/{id}/{class_id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response createClass(@PathParam("id") String id , @PathParam("class_id") String class_id ) throws Exception {
-	  File f = new File("/Users/xchelsvz/"+id+".owl");
+	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+id+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
 	  
 	  OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	  OWLOntology ontho = manager.loadOntologyFromOntologyDocument(f);
 	  
-	  String base = "http://example.com/owl/families/";
+	  String base = "http://example.com/owl/app/";
 	  PrefixManager pm = new DefaultPrefixManager(base);
 	  
-	  OWLClass person = factory.getOWLClass(":"+class_id, pm);
+	  OWLClass person = factory.getOWLClass(":"+ class_id, pm);
 	  OWLDeclarationAxiom declarationAxiom = factory.getOWLDeclarationAxiom(person);
 	  
 	  manager.addAxiom(ontho, declarationAxiom);
 	  
 	  manager.saveOntology(ontho, IRI.create(f.toURI()));
-	  return Response.ok("Clase creada",MediaType.APPLICATION_JSON).build();
+	  return Response.ok().build();
   }
   
   @POST
   @Path("/onthology/create/subclass/{id}/{class_id_a}/{class_id_b}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response createClass(@PathParam("id") String id , @PathParam("class_id_a") String class_id_a , @PathParam("class_id_b") String class_id_b ) throws Exception {
-	  File f = new File("/Users/xchelsvz/"+id+".owl");
+	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+id+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
 	  
 	  OWLOntologyManager manager = OWLManager.createOWLOntologyManager();
 	  OWLOntology ontho = manager.loadOntologyFromOntologyDocument(f);
 	  
-	  String base = "http://example.com/owl/families/";
+	  String base = "http://example.com/owl/app/";
 	  PrefixManager pm = new DefaultPrefixManager(base);
 	  
 	  OWLClass class_a = factory.getOWLClass(":"+class_id_a, pm);
@@ -126,11 +130,11 @@ public class PDFTutorial {
 	  return Response.ok("Clase creada",MediaType.APPLICATION_JSON).build();
   }
   
-  /*@POST
+ @POST
   @Path("/onthology/create/property/{id}/{class_id_a}/{class_id_b}/{property_id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response createProperty(@PathParam("id") String id , @PathParam("class_id_a") String class_id_a, @PathParam("class_id_b") String class_id_b , @PathParam("property_id") String property_id ) throws Exception {
-	  File f = new File("/Users/xchelsvz/"+id+".owl");
+	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+id+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
 	  
@@ -140,22 +144,24 @@ public class PDFTutorial {
 	  String base = "http://example.com/owl/families/";
 	  PrefixManager pm = new DefaultPrefixManager(base);
 	  
-	  OWLClass class_a = factory.getOWLClass(":"+class_id_a, pm);
-	  OWLClass class_b = factory.getOWLClass(":"+class_id_b, pm);
+	  OWLNamedIndividual class_a = factory.getOWLNamedIndividual(":"+class_id_a, pm);
+	  OWLNamedIndividual class_b = factory.getOWLNamedIndividual(":"+class_id_b, pm);
 	  
 	  OWLObjectProperty hasProp = factory.getOWLObjectProperty( ":"+property_id, pm);
 	  OWLObjectPropertyAssertionAxiom assertion = factory.getOWLObjectPropertyAssertionAxiom(hasProp, class_a, class_b);
+	  AddAxiom addAxiomChange = new AddAxiom(ontho, assertion);
+	  manager.applyChange(addAxiomChange);
 	  
 	  manager.saveOntology(ontho, IRI.create(f.toURI()));
-	  return Response.ok("Clase creada",MediaType.APPLICATION_JSON).build();
-  }*/
+	  return Response.ok().build();
+  }
   
   
   @POST
   @Path("/onthology/create/instance/{id}/{class_id}/{instance_id}")
   @Produces(MediaType.APPLICATION_JSON)
   public Response createInstance(@PathParam("id") String id , @PathParam("class_id") String class_id, @PathParam("instance_id") String instance_id ) throws Exception {
-	  File f = new File("/Users/xchelsvz/"+id+".owl");
+	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+id+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
 	  
@@ -166,12 +172,16 @@ public class PDFTutorial {
 	  PrefixManager pm = new DefaultPrefixManager(base);
 	  
 	  OWLClass class_a = factory.getOWLClass(":"+class_id, pm);
+	  OWLDataProperty prop = factory.getOWLDataProperty(":Nombre", pm);
+	  OWLLiteral myName = factory.getOWLLiteral("Simon","");
 	  OWLNamedIndividual instance_a = factory.getOWLNamedIndividual(":"+instance_id, pm);
 	  
 	  OWLClassAssertionAxiom classAssertion = factory.getOWLClassAssertionAxiom(class_a, instance_a);
+	  OWLDataPropertyAssertionAxiom valueAssertion = factory.getOWLDataPropertyAssertionAxiom(prop, instance_a, myName);
 	  manager.addAxiom(ontho, classAssertion);
+	  manager.addAxiom(ontho, valueAssertion);
 	  
 	  manager.saveOntology(ontho, IRI.create(f.toURI()));
-	  return Response.ok("Clase creada",MediaType.APPLICATION_JSON).build();
+	  return Response.ok().build();
   }
 }
