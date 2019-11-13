@@ -158,9 +158,9 @@ public class PDFTutorial {
   
   
   @POST
-  @Path("/onthology/create/instance/{id}/{class_id}/{instance_id}")
+  @Path("/onthology/create/instance/{id}/{class_id}/{instance_id}/{property_id}/{property_val}")
   @Produces(MediaType.APPLICATION_JSON)
-  public Response createInstance(@PathParam("id") String id , @PathParam("class_id") String class_id, @PathParam("instance_id") String instance_id ) throws Exception {
+  public Response createInstance(@PathParam("id") String id , @PathParam("class_id") String class_id, @PathParam("instance_id") String instance_id, @PathParam("property_id") String property_id, @PathParam("property_val") String property_val ) throws Exception {
 	  File f = new File("/Users/xchelsvz/Documents/OWLProjectApp/public/ontologies/"+id+".owl");
 	  f.getParentFile().mkdirs(); 
 	  f.createNewFile();
@@ -172,8 +172,8 @@ public class PDFTutorial {
 	  PrefixManager pm = new DefaultPrefixManager(base);
 	  
 	  OWLClass class_a = factory.getOWLClass(":"+class_id, pm);
-	  OWLDataProperty prop = factory.getOWLDataProperty(":Nombre", pm);
-	  OWLLiteral myName = factory.getOWLLiteral("Simon","");
+	  OWLDataProperty prop = factory.getOWLDataProperty(":"+property_id, pm);
+	  OWLLiteral myName = factory.getOWLLiteral(property_val,"");
 	  OWLNamedIndividual instance_a = factory.getOWLNamedIndividual(":"+instance_id, pm);
 	  
 	  OWLClassAssertionAxiom classAssertion = factory.getOWLClassAssertionAxiom(class_a, instance_a);
